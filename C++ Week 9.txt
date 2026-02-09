@@ -1,0 +1,135 @@
+Abstract Class
+Employee.h
+#ifndef EMPLOYEE_H
+#define EMPLOYEE_H
+
+#include <string>
+using namespace std;
+
+class Employee {
+protected:
+    string firstName;
+    char initial;
+    string lastName;
+
+public:
+    // Constructor
+    Employee(string f, char i, string l);
+
+    // Pure virtual function (makes class abstract)
+    virtual double getSalary() const = 0;
+
+    // Virtual destructor
+    virtual ~Employee();
+
+    // Accessor
+    string getFullName() const;
+};
+
+#endif
+Employee.cpp
+#include "Employee.h"
+
+Employee::Employee(string f, char i, string l)
+    : firstName(f), initial(i), lastName(l) {}
+
+Employee::~Employee() {}
+
+string Employee::getFullName() const {
+    return firstName + " " + initial + ". " + lastName;
+}
+SalaryEmployee Class
+SalaryEmployee.h
+#ifndef SALARYEMPLOYEE_H
+#define SALARYEMPLOYEE_H
+
+#include "Employee.h"
+
+class SalaryEmployee : public Employee {
+private:
+    double monthlySalary;
+
+public:
+    SalaryEmployee(string f, char i, string l, double salary);
+    double getSalary() const override;
+    ~SalaryEmployee();
+};
+
+#endif
+SalaryEmployee.cpp
+#include "SalaryEmployee.h"
+
+SalaryEmployee::SalaryEmployee(string f, char i, string l, double salary)
+    : Employee(f, i, l), monthlySalary(salary) {}
+
+double SalaryEmployee::getSalary() const {
+    return monthlySalary;
+}
+
+SalaryEmployee::~SalaryEmployee() {}
+
+HourlyEmployee Class
+HourlyEmployee.h
+#ifndef HOURLYEMPLOYEE_H
+#define HOURLYEMPLOYEE_H
+
+#include "Employee.h"
+
+class HourlyEmployee : public Employee {
+private:
+    double hoursWorked;
+    double ratePerHour;
+
+public:
+    HourlyEmployee(string f, char i, string l,
+                   double hours, double rate);
+
+    double getSalary() const override;
+    ~HourlyEmployee();
+};
+
+#endif
+HourlyEmployee.cpp
+#include "HourlyEmployee.h"
+
+HourlyEmployee::HourlyEmployee(string f, char i, string l,
+                               double hours, double rate)
+    : Employee(f, i, l), hoursWorked(hours), ratePerHour(rate) {}
+
+double HourlyEmployee::getSalary() const {
+    return hoursWorked * ratePerHour;
+}
+
+HourlyEmployee::~HourlyEmployee() {}
+
+Testing Polymorphism
+main.cpp
+#include <iostream>
+#include "SalaryEmployee.h"
+#include "HourlyEmployee.h"
+
+using namespace std;
+
+int main() {
+    // Base class pointers
+    Employee* emp1 = new SalaryEmployee("John", 'K', "Doe", 80000);
+    Employee* emp2 = new HourlyEmployee("Alice", 'M', "Smith", 160, 500);
+
+    cout << emp1->getFullName() << endl;
+    cout << "Monthly Salary: " << emp1->getSalary() << endl << endl;
+
+    cout << emp2->getFullName() << endl;
+    cout << "Monthly Wages: " << emp2->getSalary() << endl;
+
+    // Free memory
+    delete emp1;
+    delete emp2;
+
+    return 0;
+}
+Sample Output
+John K. Doe
+Monthly Salary: 80000
+
+Alice M. Smith
+Monthly Wages: 80000
